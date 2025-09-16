@@ -45,7 +45,7 @@
 		Premium Collection
 	</div>
 
-	<div class="mt-8 grid w-full grid-cols-2 gap-4 p-4">
+	<div class="mt-8 grid w-full grid-cols-2 gap-3 p-4">
 		{#each products as product, i}
 			<div class="grid h-full grid-cols-2">
 				<div class={`aspect-[3/4] w-full overflow-hidden rounded-md`}>
@@ -57,7 +57,7 @@
 				</div>
 				<div>
 					<div
-						class={`aspect-[3/4] w-full rounded-md ${colors[i % colors.length]} flex flex-col items-center justify-between px-4 py-8`}
+						class={`aspect-[3/4] h-full w-full overflow-hidden rounded-md ${colors[i % colors.length]} flex flex-col items-center justify-between px-4 py-8`}
 					>
 						<div class="col-span-2 flex flex-col px-2">
 							<div class="flex w-full items-center justify-center">

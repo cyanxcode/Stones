@@ -4,8 +4,26 @@
 	import { cart, addToCart, updateQty } from '$lib/stores/cart';
 	import { toggleSheet } from '$lib/ui/Sheet';
 	import type { CartItem } from '$lib/types';
+	import Accordian from '$lib/components/Accordian/Accordian.svelte';
+	import AccordianItem from '$lib/components/Accordian/AccordianItem.svelte';
+	import Trigger from '$lib/components/Accordian/Trigger.svelte';
+	import Content from '$lib/components/Accordian/Content.svelte';
 	const product = data.item[0];
 	console.log(product.stones);
+	console.log(data.stones);
+	console.log(data.pstones);
+	const productStones = data.pstones
+		.filter((pstone: any) => pstone.Product_id === product.id)
+		.map((pstone: any) => {
+			const stoneDetails = data.stones.find((s: any) => s.id === pstone.Stones_id);
+
+			// Return a combined object with details and the correct quantity
+			return {
+				...stoneDetails,
+				quantity: pstone.stone_number
+			};
+		})
+		.filter((stone: any) => stone.id);
 </script>
 
 <main class="relative h-[100vh]">
@@ -124,37 +142,87 @@
 					<p class="px-16 font-extralight tracking-wider text-zinc-200">
 						{product.description}
 					</p>
-					{#if product.stones.length > 0}
+					{#if productStones.length > 0}
 						<div class="flex flex-col gap-6">
 							<h2 class="gradient-text ml-16 text-left font-radon text-4xl text-nowrap">Stones</h2>
-							{#each product.stones as index}
-								<span class="ml-20 flex w-full items-center justify-start gap-2">
-									{#if data.stones[index - 1]}
-										<img
-											class="aspect-square h-[50px] w-[50px] rounded-3xl text-xs"
-											src={`http://localhost:8055/assets/${data.stones[index - 1]?.image}`}
-											alt={data.stones[index - 1]?.name}
-										/>
-										<div class="flex flex-col justify-start gap-1 pl-10">
-											<div class="font-radon text-xl font-semibold text-nowrap">
-												{data.stones[index - 1]?.name}
-											</div>
-											<div class="flex gap-4 font-radon text-nowrap text-zinc-300">
-												{#each data.stones[index - 1]?.quality as quality, i}
-													<span class="text-zinc-300">{quality}</span>
-													{#if i != data.stones[index - 1].quality.length - 1}
-														|
-													{/if}
-												{/each}
-											</div>
+							{#each productStones as stone}
+								<span class="ml-20 flex w-full items-center justify-start gap-4">
+									<p class="mr-8 w-8 text-xl font-light text-zinc-200">
+										{stone.quantity}<span class="mx-4">x</span>
+									</p>
+									<img
+										class="aspect-square h-[50px] w-[50px] rounded-full object-cover"
+										src={`http://localhost:8055/assets/${stone.image}`}
+										alt={stone.name}
+									/>
+									<div class="flex flex-col justify-start gap-1 pl-6">
+										<div class="font-radon text-xl font-semibold text-nowrap text-white">
+											{stone.name}
 										</div>
-									{/if}
+										<div class="flex gap-3 font-radon text-nowrap text-zinc-300">
+											{#each stone.quality as quality, i}
+												<span>{quality}</span>
+												{#if i < stone.quality.length - 1}
+													<span class="text-zinc-500">|</span>
+												{/if}
+											{/each}
+										</div>
+									</div>
 								</span>
 							{/each}
 						</div>
 					{/if}
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="grid w-full grid-cols-2">
+		<div class="h-screen w-full">
+			<h4 class="mx-16 font-karantina text-7xl font-medium text-nowrap uppercase">
+				Additional Info
+			</h4>
+			<div class="grid grid-cols-2 gap-4 p-16">
+				<img
+					class="w-full rounded-3xl"
+					src={`http://localhost:8055/assets/${product.card_image}`}
+					alt={product.name}
+				/>
+				<img
+					class="w-full rounded-3xl"
+					src={`http://localhost:8055/assets/${product.card_image}`}
+					alt={product.name}
+				/>
+				<img
+					class=" col-span-2 w-full rounded-3xl"
+					src={`http://localhost:8055/assets/${product.card_image}`}
+					alt={product.name}
+				/>
+			</div>
+		</div>
+		<div class="p-16">
+			<Accordian>
+				{#each product.additional_info as info, i}
+					<AccordianItem>
+						<Trigger open={i == 0 ? true : false}
+							><div class="py-2 font-radon text-3xl">{info.heading}</div></Trigger
+						>
+						{#if info.content.length > 1}
+							<Content>
+								<ul class="list-inside list-disc px-4 text-lg font-light text-zinc-200">
+									{#each info.content as _, i}
+										<li>{info.content[i]}</li>
+									{/each}
+								</ul>
+							</Content>
+						{:else}
+							<Content
+								><p class="px-2 text-lg font-light text-zinc-200">{info.content[0]}</p></Content
+							>
+						{/if}
+					</AccordianItem>
+				{/each}
+			</Accordian>
 		</div>
 	</div>
 </main>

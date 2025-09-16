@@ -26,5 +26,13 @@ export async function load({ fetch, params }) {
 			}
 		})
 	);
-	return { item, category, stones };
+
+	const pstones = await directus.request(
+		readItems('Product_Stones', {
+			filter: {
+				Product_id: { _eq: item[0].id } // match where slug equals value
+			}
+		})
+	);
+	return { item, category, stones, pstones };
 }
